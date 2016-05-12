@@ -973,50 +973,42 @@ gngrNinja>
 function Send-LogEmail {
     [cmdletbinding()]
     param(
-        [Parameter(Mandatory=$true)]
-        [string]
-        $To,
-        [Parameter(Mandatory=$true)]
-        [string]
-        $Subject,
-        [Parameter(Mandatory=$true)]
-        [string]
-        $Body,
-        [Parameter(Mandatory=$true)]
-        [string]
-        $emailFrom,
-        [Parameter(Mandatory=$true)]
-        [string]
-        $emailUser,
-        [Parameter(Mandatory=$false)]
-        [string]
-        $provider = 'gmail',
-        [Parameter(Mandatory=$true)]
-        $password = (Read-Host "Password?" -AsSecureString)
-    )
+    [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
+    [string]
+    $To,
+    [string]
+    [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
+    $Subject,
+    [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
+    $Body),
+    [string]
+    [Parameter(Mandatory=$false,ValueFromPipeline=$true)]
+    $emailFrom,
+    [string]
+    [Parameter(Mandatory=$false,ValueFromPipeline=$true)]
+    $provider = 'gmail'
 
-    if (!$to)        {Write-Error "No recipient specified";break}
-    if (!$subject)   {Write-Error "No subject specified";break}
-    if (!$body)      {Write-Error "No body specified";break}
-    if (!$emailFrom) {$emailFrom = 'Ninja_PS_Logging@gngrninja.com'}
+    [Parameter(Mandatory=$false,ValueFromPipeline=$true)]
+    $password = (Read-Host "Password?" -AsSecureString)
+
+    if (!$to)      {Write-Error "No recipient specified";break}
+    if (!$subject) {Write-Error "No subject specified";break}
+    if (!$body)    {Write-Error "No body specified";break}
+    if (!$emailFrom)    {$emailFrom = 'Ninja_PS_Logging@gngrninja.com'}
    
     Switch ($provider) {
 
-        {$_ -eq 'gmail'} {
-            
-            $SMTPServer   = "smtp.gmail.com"
-            $SMTPPort = 587
+        {$_ -eq 'gmail'} {$SMTPServer   = "smtp.gmail.com"}
 
-        {$_ -eq 'custom' {
-
-            $SMTPServer = 'Your.SMTP.Server'
-            $SMTPPort   = 'Your.SMTP.Server.Port'
-
-        }
 
     }
 
-    $gmailCredential = New-Object System.Management.Automation.PSCredential($emailUser,$password)
-    Send-MailMessage -To $to -From $emailFrom -Body $body -BodyAsHtml:$true -Subject $Subject -SmtpServer $smtpServer -Port $smtpPort -UseSsl -Credential $gmailCredential
+    $SMTPClient  = New-Object Net.Mail.SmtpClient($SmtpServer, 587) 
+    $SMTPMessage = New-Object System.Net.Mail.MailMessage($EmailFrom,$To,$Subject,$Body)
+
+    $SMTPClient.EnableSsl = $true 
+    $SMTPClient.Credentials = New-Object System.Net.NetworkCredential($emailUser,$emailPass); 
+    
+    $SMTPClient.Send($SMTPMessage)
 
 }
