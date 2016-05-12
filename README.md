@@ -10,7 +10,6 @@ Show what the library does as concisely as possible, developers should be able t
 
 Import-Module .\path\ninjaLogging.psd1
 
-
 ## Tests
 
 Describe and show how to run the tests with code examples.
@@ -22,4 +21,3 @@ Mike Roberts - @gngrninja
 ## License
 
 GNU
-test
