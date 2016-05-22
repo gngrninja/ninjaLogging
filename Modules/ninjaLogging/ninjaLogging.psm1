@@ -1,6 +1,24 @@
 Set-StrictMode -Version Latest
 
 $scriptPath = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
+
+Switch ($MyInvocation.PSCommandPath) {
+
+    {$_ -match '\\\\'} {
+    
+    
+        $scriptName = $_.SubString($_.LastIndexOf('\')+1)
+    
+    }
+
+    Default { 
+    
+        $scriptName = (Get-ChildItem $MyInvocation.PSCommandPath | Select -Expand BaseName)
+        
+    }
+
+}
+
 $scriptName = (Get-ChildItem $MyInvocation.PSCommandPath | Select-Object -ExpandProperty BaseName)
 
 if ($scriptName.count -gt 1) {
@@ -111,7 +129,6 @@ function New-LogFile {
 .OUTPUTS
     Full path to the log file created.
 #>
-[cmdletbinding()]
     [cmdletbinding()]
     param(
         [Parameter(Mandatory = $false,
