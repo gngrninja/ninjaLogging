@@ -1024,7 +1024,9 @@ function Send-LogEmail {
             $SMTPServer   = "smtp.gmail.com"
             $SMTPPort = 587
 
-        {$_ -eq 'custom' {
+        }
+
+        {$_ -eq 'custom'} {
 
             $SMTPServer = 'Your.SMTP.Server'
             $SMTPPort   = 'Your.SMTP.Server.Port'
